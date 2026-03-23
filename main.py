@@ -15,15 +15,3 @@ app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), na
 @app.get("/")
 def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
-
-@app.get("/strength")
-def strength(request: Request):
-    return templates.TemplateResponse("strength.html", {"request": request})
-
-@app.get("/mask")
-def mask(request: Request):
-    return templates.TemplateResponse("mask.html", {"request": request})
-
-@app.get("/validator")
-def validator(request: Request):
-    return templates.TemplateResponse("validator.html", {"request": request})
