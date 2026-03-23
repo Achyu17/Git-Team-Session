@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Password Validator</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --border: #334155;
+      --accent: #818cf8;
+      --pass: #34d399;
+      --fail: #f87171;
+      --text: #f1f5f9;
+      --muted: #64748b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 560px;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(129,140,248,0.1);
+      border: 1px solid rgba(129,140,248,0.3);
+      color: var(--accent);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      margin-bottom: 1.2rem;
+    }
+    h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.4rem; }
+    h1 em { font-style: normal; color: var(--accent); }
+    .subtitle { color: var(--muted); font-size: 0.88rem; margin-bottom: 2rem; }
+
+    .input-group { margin-bottom: 1.4rem; }
+    .input-group label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+    input[type=text], input[type=password] {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.95rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--accent); }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 1.4rem;
+    }
+    .rule-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.55rem 0.8rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      font-size: 0.8rem;
+    }
+    .rule-toggle:hover { border-color: var(--accent); }
+    .rule-toggle input { accent-color: var(--accent); cursor: pointer; }
+    .rule-toggle label { cursor: pointer; }
+
+    .min-len-wrap { display: flex; gap: 0.6rem; align-items: center; margin-bottom: 1.4rem; }
+    .min-len-wrap label { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+    #minLen { width: 70px; text-align: center; padding: 0.5rem; }
+
+    .validate-btn {
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-bottom: 1.4rem;
+    }
+    .validate-btn:hover { opacity: 0.9; }
+
+    #results { display: none; }
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    .result-header.valid { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); color: var(--pass); }
+    .result-header.invalid { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: var(--fail); }
+    .result-icon { font-size: 1.4rem; }
+
+    .rule-results { display: grid; gap: 0.4rem; }
+    .rule-item {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.55rem 0.8rem;
+      background: var(--bg);
+      border-radius: 8px;
+      font-size: 0.83rem;
+    }
+    .rule-icon { font-size: 0.9rem; }
+
+    .nav-links {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.78rem;
+      padding: 0.3rem 0.7rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); border-color: var(--accent); }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="badge">🔷 Branch: feature/password-validator</div>
+  <h1>Password <em>Validator</em></h1>
+  <p class="subtitle">Check your password against configurable rules.</p>
+
+  <div class="input-group">
+    <label>Password to Validate</label>
+    <input type="password" id="pwInput" placeholder="Enter password to validate..."/>
+  </div>
+
+  <div class="min-len-wrap">
+    <label>Min Length:</label>
+    <input type="text" id="minLen" value="8" />
+  </div>
+
+  <div class="rules-grid">
+    <div class="rule-toggle">
+      <input type="checkbox" id="rUpper" checked>
+      <label for="rUpper">Uppercase</label>
+    </div>
+    <div class="rule-toggle">
+      <input type="checkbox" id="rLower" checked>
+      <label for="rLower">Lowercase</label>
+    </div>
+    <div class="rule-toggle">
+      <input type="checkbox" id="rDigit" checked>
+      <label for="rDigit">Digit</label>
+    </div>
+    <div class="rule-toggle">
+      <input type="checkbox" id="rSpecial" checked>
+      <label for="rSpecial">Special Char</label>
+    </div>
+    <div class="rule-toggle">
+      <input type="checkbox" id="rSpaces" checked>
+      <label for="rSpaces">No Spaces</label>
+    </div>
+    <div class="rule-toggle">
+      <input type="checkbox" id="rRepeats">
+      <label for="rRepeats">No Repeats</label>
+    </div>
+  </div>
+
+  <button class="validate-btn" onclick="validate()">✓ Validate Password</button>
+
+  <div id="results">
+    <div class="result-header" id="resultHeader">
+      <span class="result-icon" id="resultIcon"></span>
+      <span id="resultText"></span>
+    </div>
+    <div class="rule-results" id="ruleResults"></div>
+  </div>
+
+  <div class="nav-links">
+    <a href="/">← Generator</a>
+    <a href="/strength">← Strength</a>
+    <a href="/mask">← Mask</a>
+  </div>
+</div>
+
+<script>
+  async function validate() {
+    const pw = document.getElementById('pwInput').value;
+    const rules = {
+      min_length: parseInt(document.getElementById('minLen').value) || 8,
+      require_uppercase: document.getElementById('rUpper').checked,
+      require_lowercase: document.getElementById('rLower').checked,
+      require_digit: document.getElementById('rDigit').checked,
+      require_special: document.getElementById('rSpecial').checked,
+      no_spaces: document.getElementById('rSpaces').checked,
+      no_repeats: document.getElementById('rRepeats').checked,
+    };
+
+    const res = await fetch('/api/validate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ password: pw, rules })
+    });
+    const data = await res.json();
+
+    document.getElementById('results').style.display = 'block';
+    const header = document.getElementById('resultHeader');
+    header.className = 'result-header ' + (data.valid ? 'valid' : 'invalid');
+    document.getElementById('resultIcon').textContent = data.valid ? '✅' : '❌';
+    document.getElementById('resultText').textContent = data.valid
+      ? `Password is VALID (${data.password_length} chars)`
+      : `Password is INVALID (${data.password_length} chars)`;
+
+    const ruleEl = document.getElementById('ruleResults');
+    ruleEl.innerHTML = data.results.map(r => `
+      <div class="rule-item">
+        <span class="rule-icon">${r.passed ? '✅' : '❌'}</span>
+        <span style="color:${r.passed ? 'var(--pass)' : 'var(--fail)'}">${r.rule}</span>
+      </div>
+    `).join('');
+  }
+</script>
+</body>
+</html>
