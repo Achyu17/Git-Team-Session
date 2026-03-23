@@ -1,40 +1,38 @@
-# 🔐 Password Toolkit — Main Branch (Merged)
+# 👁 Feature: Password Mask / Unmask Toggle
+**Branch:** `feature/password-mask-toggle`
 
-This is the **main** branch — the final merged application combining all 4 feature branches.
+## What This Feature Does
+Allows a user to type a password and toggle its visibility between
+masked (●●●●●) and plain text. The backend returns the masked version
+and character count. The frontend handles the show/hide toggle.
 
-## Features Included
-| Feature                | Branch                              | Route       |
-|------------------------|-------------------------------------|-------------|
-| Password Generator     | feature/password-generator          | `/`         |
-| Strength Checker       | feature/password-strength-checker   | `/strength` |
-| Mask / Unmask Toggle   | feature/password-mask-toggle        | `/mask`     |
-| Password Validator     | feature/password-validator          | `/validator`|
-
-## How to Run the Full App
-```bash
-cd main
-pip install -r requirements.txt
-uvicorn main:app --reload --port 8080
-# Visit http://localhost:8080
+## API Endpoint
+```
+POST /api/mask
+```
+Request Body (JSON):
+```json
+{ "password": "MySecret123!" }
 ```
 
-## API Endpoints (All Active)
-| Method | Endpoint       | Feature           |
-|--------|----------------|-------------------|
-| GET    | /api/generate  | Password Generator |
-| POST   | /api/strength  | Strength Checker  |
-| POST   | /api/mask      | Mask Toggle       |
-| POST   | /api/validate  | Validator         |
+### Example Response
+```json
+{
+  "original": "MySecret123!",
+  "masked": "************",
+  "length": 12
+}
+```
 
-## How This Was Built (Git Simulation)
-This folder represents the state of the `main` branch **after** all 4 feature
-branches were merged via Pull Requests.
+## How to Run
+```bash
+cd feature-password-mask-toggle
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8002
+# Visit http://localhost:8002
+```
 
-In a real team workflow:
-1. Each member worked in their own feature folder/branch
-2. Each opened a Pull Request on GitHub
-3. Code was reviewed and approved
-4. Branches were merged into `main` one by one
-5. Merge conflicts in `main.py` and `routes/` were resolved manually
-
-See the root `README.md` for the full Git workflow guide.
+## Files
+- `main.py` — FastAPI app entry point
+- `routes/mask.py` — API route logic
+- `templates/mask.html` — Frontend UI
